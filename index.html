@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Home Design Questionnaire — Gridline</title>
+<meta name="robots" content="noindex">
+<link rel="icon" href="/favicon.ico">
 <style>
   :root {
     --green: #9bd115; --olive: #5e7f12; --slate: #363a40; --tint: #eef5dd;
@@ -83,7 +85,10 @@
   .wa { background: #1f8f4e; border-color: #1f8f4e; color: #fff; }
   .ghost { background: transparent; border-color: transparent; color: var(--muted); font-weight: normal; text-decoration: underline; }
   .msg { margin-top: 10px; font-size: 13.5px; color: #c0392b; min-height: 1em; }
-  .saved { color: var(--olive); }
+  .msg.ok { color: var(--olive); font-weight: bold; }
+  .msg.wait { color: var(--muted); }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  button[disabled] { opacity: .6; cursor: wait; }
 
   footer { text-align: center; color: var(--muted); font-size: 12.5px; padding: 26px 16px 10px; }
   footer i { color: var(--slate); }
@@ -130,20 +135,17 @@
 <div class="wrap">
   <div class="intro">
     <p>Please answer as many questions as you can. Tap an option to select it. Questions marked <b>(choose all that apply)</b> allow more than one answer.</p>
-    <p>Not sure about something? Leave it blank. We'll go through it together at our meeting. Use the <b>Remarks</b> box at the end of each section to explain anything in your own words. Your answers are saved on this device as you go.</p>
+    <p>Not sure about something? Leave it blank. We'll go through it together at our meeting. Use the <b>Remarks</b> box at the end of each section to explain anything in your own words. Your answers are saved on this device as you go, so you can come back and finish later.</p>
   </div>
 
   <form id="qform" autocomplete="on" novalidate></form>
 
   <div class="actions">
     <h2>Send your answers to Gridline</h2>
-    <p>Save a PDF copy and share it with us, or send your answers directly on WhatsApp or email.</p>
+    <p>Send your answers to us directly on WhatsApp, or save a PDF copy and share it with us. We'll call you to discuss them.</p>
     <div class="btns">
-      <button type="button" class="primary" id="btnPdf">Save as PDF / Print</button>
       <button type="button" class="wa" id="btnWa">Send on WhatsApp</button>
-      <button type="button" class="secondary" id="btnMail">Send by Email</button>
-      <button type="button" class="secondary" id="btnTxt">Download as Text</button>
-      <button type="button" class="ghost" id="btnClear">Clear all answers</button>
+      <button type="button" class="primary" id="btnPdf">Save as PDF</button>
     </div>
     <div class="msg" id="msg"></div>
   </div>
@@ -433,27 +435,6 @@ document.getElementById("btnPdf").onclick = () => { if (needContact()) return; b
 document.getElementById("btnWa").onclick = () => {
   if (needContact()) return;
   window.open("https://wa.me/919113833798?text=" + encodeURIComponent(summaryText()), "_blank");
-};
-document.getElementById("btnMail").onclick = () => {
-  if (needContact()) return;
-  const d = collect();
-  location.href = "mailto:gridline.eng.const@gmail.com?subject=" + encodeURIComponent("Home Design Questionnaire — " + d.name) +
-                  "&body=" + encodeURIComponent(summaryText());
-};
-document.getElementById("btnTxt").onclick = () => {
-  if (needContact()) return;
-  const d = collect();
-  const blob = new Blob([summaryText()], { type: "text/plain" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "Gridline_Questionnaire_" + (d.name || "client").replace(/\s+/g, "_") + ".txt";
-  a.click(); URL.revokeObjectURL(a.href);
-};
-document.getElementById("btnClear").onclick = () => {
-  if (!confirm("Clear all your answers? This cannot be undone.")) return;
-  form.reset();
-  try { localStorage.removeItem(STORE); } catch (e) {}
-  syncOther(); progress();
 };
 </script>
 </body>
